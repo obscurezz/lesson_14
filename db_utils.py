@@ -7,8 +7,15 @@ def get_more_actors(actor_1: str, actor_2: str) -> list:
         # You can't use GROUP BY expression with HAVING COUNT() in this select below
         # because selected result is a string that contains every actor,
         # so you are just getting each group with count = 1
-        sql_query = f"""SELECT "cast" FROM netflix WHERE "cast" LIKE '%{actor_1}%' AND "cast" LIKE '%{actor_2}%'"""
-        query_result = cursor.execute(sql_query)
+        query_result = cursor.execute(
+                                     """
+                                     SELECT "cast"
+                                     FROM netflix
+                                     WHERE "cast" LIKE :a1
+                                     AND "cast" LIKE :a2
+                                     """,
+                                     {"a1": f'%{actor_1}%', "a2": f'%{actor_2}%'}
+                                     )
 
         query_result = query_result.fetchall()
         query_result = [r[0].replace(f"{actor_1},", '').replace(f"{actor_2},", '').strip().split(', ') for r in
@@ -32,8 +39,17 @@ def get_movie_by_params(form: str, year: int, genre: str) -> list[dict]:
         connection.row_factory = dict_factory
         cursor = connection.cursor()
 
-        sql_query = f"""SELECT title, description FROM netflix WHERE "type" = '{form}' AND release_year = {year} AND listed_in LIKE '%{genre}%' ORDER BY release_year DESC"""
-        query_result = cursor.execute(sql_query)
+        query_result = cursor.execute(
+                                     """
+                                     SELECT title, description
+                                     FROM netflix
+                                     WHERE "type" = :form
+                                     AND release_year = :year
+                                     AND listed_in LIKE :genre
+                                     ORDER BY release_year DESC
+                                     """,
+                                     {"form": form, "year": year, "genre": f'%{genre}%'}
+                                     )
 
         query_result = query_result.fetchall()
 

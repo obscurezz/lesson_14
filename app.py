@@ -12,4 +12,4 @@ app.register_blueprint(movies_blueprint)
 app.register_blueprint(rating_blueprint)
 app.register_blueprint(genres_blueprint)
 
-app.run(port=8080, debug=True)
+app.run(port=8080)
